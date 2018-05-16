@@ -1,0 +1,128 @@
+/* Box sizing defaults */
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+/* Size and positioning */
+
+.wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.image-grid {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-content: center;
+    width: 80%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img {
+    width: 225px;
+    padding: 10px;
+}
+
+.layer2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* display: flex;
+    justify-content: center;
+    align-content: center; */
+}
+
+.overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.overlay-image{
+    width: 75%;
+}
+
+.overlay-image img {
+    width: 100%;
+}
+
+.layer2 i {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.header {
+    text-align: center;
+    padding: 40px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Z-index */
+
+.layer1 {
+    z-index: 1;
+}
+
+.layer2 {
+    z-index: 2;
+}
+
+/* Fonts */
+
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+}
+
+.header {
+    font-size: 3em;
+}
+
+.layer2 i {
+    font-size: 3em;
+}
+
+/* Colors and borders */
+
+.overlay {
+    background-color: rgba(57, 59, 59, 0.9);
+}
+
+.layer2 i {
+    color: white;
+}
+
+/* Link defaults */
+
+a:link, a:visited{
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+}
+
+/* Media queries */
+
