@@ -1,0 +1,124 @@
+const IMG_DIR = 'images/';
+const MAX_DIMENSION = '225';
+var overlayLayer = document.querySelector('[data-overlay-layer]');
+var overlayImage = document.querySelector('[data-overlay-image]');
+var images = document.querySelectorAll('[data-thumbnail]');
+
+var imageList = [
+    {
+        src: 'three-otter-babies.jpg',
+        caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+        attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    }
+    // ,
+    // {
+    //     src: 'playful-otters.jpeg',
+    //     caption: 'Playful otters',
+    //     attrib: 'http://www.pbs.org/wnet/nature/charlie-curious-otters/15571/'
+    // },
+    // {
+    //     src: 'laughing-otter.jpg',
+    //     caption: 'Winking otter',
+    //     attrib: 'https://www.mnn.com/earth-matters/animals/photos/15-fascinating-facts-about-otters/otterly-awesome'
+    // },
+    // {
+    //     src: 'three-otter-babies.jpg',
+    //     caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+    //     attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    // },
+    // {
+    //     src: 'three-otter-babies.jpg',
+    //     caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+    //     attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    // },
+    // {
+    //     src: 'three-otter-babies.jpg',
+    //     caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+    //     attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    // },
+    // {
+    //     src: 'three-otter-babies.jpg',
+    //     caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+    //     attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    // },
+    // {
+    //     src: 'three-otter-babies.jpg',
+    //     caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+    //     attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    // },
+    // {
+    //     src: 'three-otter-babies.jpg',
+    //     caption: 'Three baby otters at the Cleveland Metroparks Zoo',
+    //     attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
+    // }
+]
+
+function resizeImage(image) {
+    var height = image.height;
+    var width = image.width;
+    var ratio = 1;
+
+    if (height > MAX_DIMENSION) {
+        ratio = MAX_DIMENSION / height;
+        height = height * ratio;
+        width = width * ratio;
+    }
+    if (width > MAX_DIMENSION) { 
+        ratio = MAX_DIMENSION / width;
+        height = height * ratio;
+        width = width * ratio;
+    }
+
+    image.width = width;
+    image.height = height;
+    
+    return image;
+}
+
+function loadImages(imageArray) {
+    var imageContainer = document.querySelector('[data-image-grid]');
+    imageArray.forEach(image => {
+        var newImage = document.createElement('img');
+        newImage.setAttribute('src', IMG_DIR + image.src);
+        newImage.setAttribute('alt', image.caption);
+        newImage.setAttribute('data-thumbnail','');
+        newImage.addEventListener('click', event => {
+            event.preventDefault();
+            overlayImage.setAttribute('src', newImage.getAttribute('src'));
+            overlayLayer.classList.remove('hidden');
+        });
+        
+        // newImage = resizeImage(newImage);
+        var newAnchor = document.createElement('a');
+        newAnchor.setAttribute('href', '#');
+        newAnchor.appendChild(newImage);
+        imageContainer.appendChild(newAnchor);
+    });
+}
+
+function resizeImages(images) {
+    console.log('here');
+    // var images = document.querySelectorAll('[data-thumbnail]');
+    console.log(images);
+    images.forEach(image => {
+        console.log(`width: ${image.width}`);
+        console.log(`height: ${image.height}`);
+        resizeImage(image);
+    });
+}
+
+function addOverlayExitListener() {
+    var overlayExitIcon = document.querySelector('[data-overlay-exit]');
+    overlayExitIcon.addEventListener('click', event => {
+        overlayLayer.classList.add('hidden');
+    });
+}
+
+function main() {
+    loadImages(imageList);
+    resizeImages(images);
+    addOverlayExitListener();
+    
+}
+
+main();

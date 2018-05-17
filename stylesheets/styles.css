@@ -31,20 +31,32 @@ html, body {
     margin-right: auto;
 }
 
-img {
-    width: 225px;
-    padding: 10px;
+.image-grid div {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-grid a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-grid img {
+    display: block;
 }
 
 .layer2 {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* display: flex;
-    justify-content: center;
-    align-content: center; */
 }
 
 .overlay {
@@ -56,7 +68,7 @@ img {
 }
 
 .overlay-image{
-    width: 75%;
+    width: 60%;
 }
 
 .overlay-image img {
@@ -64,7 +76,7 @@ img {
 }
 
 .layer2 i {
-    position: absolute;
+    position: fixed;
     top: 20px;
     right: 20px;
 }
@@ -104,6 +116,10 @@ html {
 }
 
 /* Colors and borders */
+
+.image-grid a {
+    background-color: rgb(57, 59, 59);
+}
 
 .overlay {
     background-color: rgba(57, 59, 59, 0.9);
