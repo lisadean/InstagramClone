@@ -53,12 +53,43 @@ function getOverlayLayer() {
     return document.querySelector('[data-overlay-layer]');
 }
 
+function getOverlayButtonLayer() {
+    return document.querySelector('[data-overlay-button-layer]');
+}
+
+function getOverlayImageContainer() {
+    return document.querySelector('[data-overlay-image-container]');
+}
+
 function getOverlayImage() {
     return document.querySelector('[data-overlay-image]');
 }
 
+function getOverlayImageCaption() {
+    return document.querySelector('[data-caption]');
+}
+
+function getOverlayImageAttrib() {
+    return document.querySelector('[data-attrib]');
+}
+
+function getOverlayImageAttribUrl() {
+    return document.querySelector('[data-attrib-url]');
+}
+
 function getImages(){
     return document.querySelectorAll('[data-thumbnail]');
+}
+
+// Copied from http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
+function getHostName(url) {
+    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+    return match[2];
+    }
+    else {
+        return null;
+    }
 }
 
 function resizeImage(image) {
@@ -91,6 +122,15 @@ function resizeImage(image) {
     }, 30);   
 }
 
+
+function loadClickedImage(imageObject, imageElement) {
+    getOverlayImage().setAttribute('src', imageElement.getAttribute('src'));
+    getOverlayImage().setAttribute('alt', imageElement.getAttribute('alt'));
+    getOverlayImageCaption().textContent = imageObject.caption;
+    getOverlayImageAttribUrl().setAttribute('href', imageObject.attrib);
+    getOverlayImageAttribUrl().textContent = getHostName(imageObject.attrib);
+}
+
 function loadImages(imageArray) {
     var imageContainer = document.querySelector('[data-image-grid]');
     imageArray.forEach(image => {
@@ -100,8 +140,8 @@ function loadImages(imageArray) {
         newImage.setAttribute('data-thumbnail','');
         newImage.addEventListener('click', event => {
             event.preventDefault();
-            getOverlayImage().setAttribute('src', newImage.getAttribute('src'));
-            getOverlayLayer().classList.remove('hidden');
+            loadClickedImage(image, newImage);
+            showOverlay();
         });
         newImage.onload = resizeImage(newImage);
         var newAnchor = document.createElement('a');
@@ -113,8 +153,26 @@ function loadImages(imageArray) {
     });
 }
 
+function addOverlayImageOnLoadListener() {
+    var image = getOverlayImage();
+    image.addEventListener('load', event => {
+        // console.log(`H: ${image.height}`);
+        getOverlayImageContainer().setAttribute('style', `height: ${image.height}px`);
+    });
+    window.addEventListener('resize', event => {
+        // console.log(`H: ${image.height}`);
+        getOverlayImageContainer().setAttribute('style', `height: ${image.height}px`);
+    });
+}
+
+function showOverlay() {
+    getOverlayLayer().classList.remove('hidden');
+    getOverlayButtonLayer().classList.remove('hidden');
+}
+
 function exitOverlay() {
     getOverlayLayer().classList.add('hidden');
+    getOverlayButtonLayer().classList.add('hidden');
 }
 
 function addOverlayExitListener() {
@@ -131,9 +189,19 @@ function addOverlayExitListener() {
     };
 }
 
+function tempOverlay(){
+    var newImage = document.createElement('img');
+    newImage.setAttribute('src', IMG_DIR + imageList[0].src);
+    newImage.setAttribute('alt', imageList[0].caption);
+    loadClickedImage(imageList[0], newImage);
+    showOverlay();
+}
+
 function main() {
     loadImages(imageList);
+    addOverlayImageOnLoadListener();
     addOverlayExitListener();
+    tempOverlay();
 }
 
 main();

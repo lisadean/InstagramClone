@@ -51,6 +51,11 @@ html, body {
     display: block;
 }
 
+.header {
+    text-align: center;
+    padding: 40px;
+}
+
 .layer2 {
     position: fixed;
     top: 0;
@@ -68,21 +73,53 @@ html, body {
 }
 
 .overlay-image{
-    width: 60%;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .overlay-image img {
-    width: 100%;
+    display: block;
+    width: 70%;
+    border-radius: 5px;
+    margin-right: 5px;
 }
 
-.layer2 i {
+.overlay-sidebar {
+    width: 30%;
+    height: 100%;
+    margin-left: 5px;
+}
+
+.overlay-caption, .overlay-attrib {
+    margin: 10px;
+    padding: 10px;
+}
+
+.overlay-attrib {
+    text-align: right;
+}
+
+.button-overlay-exit {
     position: fixed;
     top: 20px;
     right: 20px;
 }
 
-.header {
-    text-align: center;
+.layer3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.button-overlay-left, .button-overlay-right {
+    display: block;
     padding: 40px;
 }
 
@@ -97,10 +134,14 @@ html, body {
 }
 
 .layer2 {
+    z-index: 3;
+}
+
+.layer3 {
     z-index: 2;
 }
 
-/* Fonts */
+/* Fonts, colors, borders */
 
 html {
     font-family: Arial, Helvetica, sans-serif;
@@ -111,12 +152,6 @@ html {
     font-size: 3em;
 }
 
-.layer2 i {
-    font-size: 3em;
-}
-
-/* Colors and borders */
-
 .image-grid a {
     background-color: rgb(57, 59, 59);
 }
@@ -125,7 +160,28 @@ html {
     background-color: rgba(57, 59, 59, 0.9);
 }
 
-.layer2 i {
+.overlay-image img {
+    border-radius: 5px;
+    border: white solid 1px;
+}
+
+.overlay-sidebar {
+    border-radius: 5px;
+    background-color: white;
+}
+
+.overlay-caption {
+    font-size: 1.25em;
+    border-bottom: rgb(57, 59, 59) 1px solid;
+}
+
+.attrib-link {
+    font-style: italic;
+    color: rgb(57, 59, 59);
+}
+
+.button-overlay-exit, .button-overlay-left, .button-overlay-right {
+    font-size: 3em;
     color: white;
 }
 

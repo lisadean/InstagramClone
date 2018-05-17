@@ -18,10 +18,20 @@
         </div>
 
         <div class="layer2 hidden" data-overlay-layer>
-            <a href="#"><i class="fas fa-times" data-overlay-exit></i></a>
+            <a href="#"><i class="fas fa-times button-overlay-exit" data-overlay-exit></i></a>
             <div class="overlay">
-                <div class="overlay-image"><img src="" alt="" data-overlay-image></div>
+                <div class="overlay-image" data-overlay-image-container>
+                    <img src="" alt="" data-overlay-image>
+                    <div class="overlay-sidebar">
+                        <div class="overlay-caption" data-caption></div>
+                        <div class="overlay-attrib" data-attrib>via <a class="attrib-link" href="#" target="_blank" data-attrib-url></a></div>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="layer3 hidden" data-overlay-button-layer>
+            <a href="#"><i class="fas fa-angle-left button-overlay-left" data-overlay-left-arrow></i></a>
+            <a href="#"><i class="fas fa-angle-right button-overlay-right" data-overlay-right-arrow></i></a>
         </div>
     </div>
     <script src="scripts/index.js"></script>
