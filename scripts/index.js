@@ -1,53 +1,8 @@
 const IMG_DIR = 'images/';
 const MAX_DIMENSION = '225';
 
-var imageList = [
-    {
-        src: 'three-otter-babies.jpg',
-        caption: 'Three baby otters at the Cleveland Metroparks Zoo',
-        attrib: 'https://www.clevescene.com/scene-and-heard/archives/2017/11/17/three-adorable-baby-otters-born-at-the-cleveland-metroparks-zoo'
-    },
-    {
-        src: 'playful-otters.jpeg',
-        caption: 'Playful otters',
-        attrib: 'http://www.pbs.org/wnet/nature/charlie-curious-otters/15571/'
-    },
-    {
-        src: 'laughing-otter.jpg',
-        caption: 'Winking otter',
-        attrib: 'https://www.mnn.com/earth-matters/animals/photos/15-fascinating-facts-about-otters/otterly-awesome'
-    },
-    {
-        src: 'mother-sleeping-pup.jpg',
-        caption: 'Mother otter cuddling sleeping pup',
-        attrib: 'https://www.telegraph.co.uk/news/2016/10/26/sea-otter-cuddles-her-pup-to-keep-it-dry-and-warm-while-it-sleep/'
-    },
-    {
-        src: 'otter-blep.jpg',
-        caption: "Otter 'blep'",
-        attrib: 'https://grandfather.com/things-to-do/wildlife-habitats/river-otters/'
-    },
-    {
-        src: 'otter-eating-alligator.jpg',
-        caption: 'Otter eating alligator',
-        attrib: 'https://news.nationalgeographic.com/news/2014/03/140306-otter-alligator-florida-predator-photos-wildlife/'
-    },
-    {
-        src: 'derpy-otter.jpg',
-        caption: 'Derpy otter',
-        attrib: 'https://www.littlethings.com/fall-in-love-with-otters/'
-    },
-    {
-        src: 'otter-family.jpg',
-        caption: 'Otter family',
-        attrib: 'https://mothership.sg/2017/04/marina-otters-move-to-singapore-river-after-losing-their-original-home-to-rival-bishan-family/'
-    },
-    {
-        src: 'giant-river-otter.png',
-        caption: 'Giant river otter',
-        attrib: 'https://www.reddit.com/r/pics/comments/6a298d/this_picture_of_a_giant_sea_otter_makes_it_very/'
-    }
-]
+/******************************************************************************/
+// Getters
 
 function getOverlayLayer() {
     return document.querySelector('[data-overlay-layer]');
@@ -82,16 +37,20 @@ function getImages(){
 }
 
 function getLeftArrowButton() {
-    return document.querySelector('[button-overlay-left]');
+    return document.querySelector('[data-overlay-left-arrow]');
 }
 
 function getRightArrowButton() {
-    return document.querySelector('[button-overlay-right]');
+    return document.querySelector('[data-overlay-right-arrow]');
 }
 
 function getFirstImageElement() {
-    return document.querySelector('[data-image-index="0"]')
+    var images = getImages();
+    return images[0];
 }
+
+/******************************************************************************/
+// Helper functions
 
 // Copied from http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
 function getHostName(url) {
@@ -104,21 +63,26 @@ function getHostName(url) {
     }
 }
 
+function getFileName(path) {
+    return path.split('\\').pop().split('/').pop();;
+}
+
 function toggleOverlayLayer() {
     getOverlayLayer().classList.toggle('hidden');
 }
 
-function resizeImage(image) {
+function hideOverlayLayer() {
+    getOverlayLayer().classList.add('hidden');
+}
 
+function resizeImage(image) {
     var width, height;
     var ratio = 1;
-
     var wait = setInterval(function() {
         width = image.naturalWidth;
         height = image.naturalHeight;
         if (width && height) {
-            clearInterval(wait);
-            
+            clearInterval(wait);       
             if (height > MAX_DIMENSION) {
                 ratio = MAX_DIMENSION / height;
                 width = width * ratio;
@@ -129,80 +93,115 @@ function resizeImage(image) {
                 width = width * ratio;
                 height = height * ratio;
             }
-
             image.width = width;
-            image.height = height;
-            
+            image.height = height;          
             return image;
         }
     }, 30);   
 }
 
-function loadClickedImage(imageObject, imageElement) {
-    var img = getOverlayImage();
-    var imgCaption = getOverlayImageCaption();
-    var imgAttribUrl = getOverlayImageAttribUrl();
-    img.setAttribute('src', imageElement.getAttribute('src'));
-    img.setAttribute('alt', imageElement.getAttribute('alt'));
-    img.setAttribute('data-image-index', imageElement.getAttribute('data-image-index'));
-    imgCaption.textContent = imageObject.caption;
-    imgAttribUrl.setAttribute('href', imageObject.attrib);
-    imgAttribUrl.textContent = getHostName(imageObject.attrib);
-    var index = Number(imageElement.getAttribute('data-image-index'));
-    // index == 0 ? getLeftArrowButton().classList.add('hidden') : getLeftArrowButton().classList.remove('hidden');
-    // index == imageList.length - 1 ? getRightArrowButton().classList.add('hidden') : getRightArrowButton().classList.remove('hidden');
+function getImageIndex (imageElement) {
+    var images = getImages();
+    var fileName = getFileName(imageElement.src);
+    var currentIndex;
+    var position = 'middle';
+    images.forEach((image, index) => {
+        if (getFileName(image.src) == fileName) {
+            currentIndex = index;
+        }
+    });
+    if (currentIndex == 0) {position = 'first'}
+    if (currentIndex == images.length - 1) { position = 'last'}
+    return {
+        index: currentIndex,
+        position: position
+    };
 }
 
-function loadImages(imageArray) {
+function toggleArrowButtons(position) {
+    if (position == 'first') {
+        getLeftArrowButton().classList.add('see-through');
+        getRightArrowButton().classList.remove('see-through');
+    } else if (position == 'last') {
+        getLeftArrowButton().classList.remove('see-through');
+        getRightArrowButton().classList.add('see-through');
+    } else {
+        getLeftArrowButton().classList.remove('see-through');
+        getRightArrowButton().classList.remove('see-through');
+    }
+}
+
+function loadImage(image, element) {
+    // if (img.src) {
+        element.setAttribute('src', IMG_DIR + image.src);
+        element.setAttribute('alt', image.caption);
+    // }
+}
+
+function loadImageGrid(IMAGE_ARRAY) {
     var imageContainer = document.querySelector('[data-image-grid]');
-    imageArray.forEach((image, index, array) => {
-        var newImage = document.createElement('img');
-        newImage.setAttribute('src', IMG_DIR + image.src);
-        newImage.setAttribute('alt', image.caption);
-        newImage.setAttribute('data-thumbnail','');
-        newImage.setAttribute('data-image-index', index);
-        newImage.addEventListener('click', event => {
+    IMAGE_ARRAY.forEach((image) => {
+        var imgElement = document.createElement('img');
+        loadImage(image, imgElement);
+        imgElement.setAttribute('data-thumbnail','');
+        imgElement.addEventListener('click', event => {
             event.preventDefault();
-            loadClickedImage(image, newImage);
+            loadOverlayImage(image);
             toggleOverlayLayer();
         });
-        newImage.onload = resizeImage(newImage);
-        var newAnchor = document.createElement('a');
-        newAnchor.setAttribute('href', '#');
-        var newDiv = document.createElement('div');
-        newAnchor.appendChild(newImage);
-        newDiv.appendChild(newAnchor);
-        imageContainer.appendChild(newDiv);
+        imgElement.onload = resizeImage(imgElement);
+        var aElement = document.createElement('a');
+        aElement.setAttribute('href', '#');
+        var divElement = document.createElement('div');
+        aElement.appendChild(imgElement);
+        divElement.appendChild(aElement);
+        imageContainer.appendChild(divElement);
     });
 }
 
-function loadNextImage(index) {
-    var image = imageList[index];
-    getOverlayImage().setAttribute('src', IMG_DIR + image.src);
-    getOverlayImage().setAttribute('alt', image.caption);
-    getOverlayImage().setAttribute('data-image-index', index);
-    getOverlayImageCaption().textContent = image.caption;
-    getOverlayImageAttribUrl().setAttribute('href', image.attrib);
-    getOverlayImageAttribUrl().textContent = getHostName(image.attrib);
+function loadOverlayImage(imageData) {
+    var img = getOverlayImage();
+    var imgCaption = getOverlayImageCaption();
+    var imgAttribUrl = getOverlayImageAttribUrl();
+    loadImage(imageData, img);
+    imgCaption.textContent = imageData.caption;
+    imgAttribUrl.setAttribute('href', imageData.attrib);
+    imgAttribUrl.textContent = getHostName(imageData.attrib);
+    var currentLocation = getImageIndex(img);
+    var position = currentLocation.position;
+    toggleArrowButtons(position);
+}
+
+function loadNextImage(direction) {
+    var img = getOverlayImage();
+    var newIndex;
+    var currentLocation = getImageIndex(img);
+    var currentIndex = currentLocation.index;
+    var position = currentLocation.position;
+    if (direction == 'L' && position != 'first') {
+        newIndex = currentIndex - 1;
+    } else if (direction == 'R' && position != 'last') {
+        newIndex = currentIndex + 1;
+    } else {
+        newIndex = currentIndex;
+    }
+    loadOverlayImage(IMAGE_LIST[newIndex]);
 }
 
 function leftArrow() {
-    var index = Number(getOverlayImageIndex());
-        if (index > 0) {
-            var newIndex = index - 1;
-            loadNextImage(newIndex);
-            index == 0 ? getLeftArrowButton().classList.add('hidden') : getLeftArrowButton().classList.remove('hidden');
-        }
+    if (getOverlayImage().src) {
+        loadNextImage('L');
+    }
 }
 
 function rightArrow() {
-    var index = Number(getOverlayImageIndex());
-        if (index < imageList.length - 1) {
-            var newIndex = index + 1;
-            loadNextImage(newIndex);
-            index == imageList.length - 1 ? getRightArrowButton().classList.add('hidden') : getRightArrowButton().classList.remove('hidden');
-        }
+    if (getOverlayImage().src) {
+        loadNextImage('R');
+    }
 }
+
+/******************************************************************************/
+// Listeners
 
 function addOverlayImageOnLoadListener() {
     // To get current overlay image height and set that on parent container. Sidebar
@@ -220,38 +219,60 @@ function addOverlayExitListener() {
     // Button
     var overlayExitIcon = document.querySelector('[data-overlay-exit]');
     overlayExitIcon.addEventListener('click', event => {
-        toggleOverlayLayer();
+        hideOverlayLayer();
     });
     // Escape key
-    document.onkeydown = function(event) {
+    document.addEventListener( 'keydown', event => {
         if (event.keyCode == 27) {
-            toggleOverlayLayer();
+            hideOverlayLayer();
         }
-    };
+    });
 }
 
-function addButtonOverlayListener() {
+function addLeftButtonListener() {
+    // Button
     var leftButton = document.querySelector('[data-overlay-left-arrow]');
     leftButton.addEventListener( 'click', event => {
         leftArrow();
     });
+    // Left arrow key
+    document.addEventListener( 'keydown', event => {
+        if (event.keyCode == 37) {
+            leftArrow();
+        }
+    });
+}
+
+function addRightButtonListener() {
+    // Button
     var rightButton = document.querySelector('[data-overlay-right-arrow]');
     rightButton.addEventListener( 'click', event => {
         rightArrow();
     });
+    // Right arrow key
+    document.addEventListener( 'keydown', event => {
+        if (event.keyCode == 39) {
+            rightArrow();
+        }
+    });
 }
+
+/******************************************************************************/
+// Main program
 
 function tempWorkOnOverlayLayer(){
     getFirstImageElement().click();
+    toggleArrowButtons('first');
 }
 
 function main() {
-    loadImages(imageList);
+    loadImageGrid(IMAGE_LIST);
     addOverlayImageOnLoadListener();
     addOverlayExitListener();
-    addButtonOverlayListener();
+    addLeftButtonListener();
+    addRightButtonListener();
 
-    tempWorkOnOverlayLayer();
+    // tempWorkOnOverlayLayer();
 }
 
 main();
