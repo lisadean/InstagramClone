@@ -132,10 +132,8 @@ function toggleArrowButtons(position) {
 }
 
 function loadImage(image, element) {
-    // if (img.src) {
-        element.setAttribute('src', IMG_DIR + image.src);
-        element.setAttribute('alt', image.caption);
-    // }
+    element.setAttribute('src', IMG_DIR + image.src);
+    element.setAttribute('alt', image.caption);
 }
 
 function loadImageGrid(IMAGE_ARRAY) {

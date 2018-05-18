@@ -43,5 +43,10 @@ const IMAGE_LIST = [
         src: 'giant-river-otter.png',
         caption: 'Giant river otter',
         attrib: 'https://www.reddit.com/r/pics/comments/6a298d/this_picture_of_a_giant_sea_otter_makes_it_very/'
+    },
+    {
+        src: 'upvote-otter.jpg',
+        caption: 'Otter with an upvote for a nose',
+        attrib: 'https://www.reddit.com/r/mildlyinteresting/comments/8kddhv/this_otter_has_an_upvote_shaped_nose/'
     }
 ]
