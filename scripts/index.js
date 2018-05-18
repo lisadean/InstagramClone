@@ -53,16 +53,16 @@ function getOverlayLayer() {
     return document.querySelector('[data-overlay-layer]');
 }
 
-function getOverlayButtonLayer() {
-    return document.querySelector('[data-overlay-button-layer]');
-}
-
 function getOverlayImageContainer() {
     return document.querySelector('[data-overlay-image-container]');
 }
 
 function getOverlayImage() {
     return document.querySelector('[data-overlay-image]');
+}
+
+function getOverlayImageIndex() {
+    return getOverlayImage().getAttribute('data-image-index');
 }
 
 function getOverlayImageCaption() {
@@ -81,6 +81,18 @@ function getImages(){
     return document.querySelectorAll('[data-thumbnail]');
 }
 
+function getLeftArrowButton() {
+    return document.querySelector('[button-overlay-left]');
+}
+
+function getRightArrowButton() {
+    return document.querySelector('[button-overlay-right]');
+}
+
+function getFirstImageElement() {
+    return document.querySelector('[data-image-index="0"]')
+}
+
 // Copied from http://www.primaryobjects.com/2012/11/19/parsing-hostname-and-domain-from-a-url-with-javascript/
 function getHostName(url) {
     var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
@@ -90,6 +102,10 @@ function getHostName(url) {
     else {
         return null;
     }
+}
+
+function toggleOverlayLayer() {
+    getOverlayLayer().classList.toggle('hidden');
 }
 
 function resizeImage(image) {
@@ -122,26 +138,33 @@ function resizeImage(image) {
     }, 30);   
 }
 
-
 function loadClickedImage(imageObject, imageElement) {
-    getOverlayImage().setAttribute('src', imageElement.getAttribute('src'));
-    getOverlayImage().setAttribute('alt', imageElement.getAttribute('alt'));
-    getOverlayImageCaption().textContent = imageObject.caption;
-    getOverlayImageAttribUrl().setAttribute('href', imageObject.attrib);
-    getOverlayImageAttribUrl().textContent = getHostName(imageObject.attrib);
+    var img = getOverlayImage();
+    var imgCaption = getOverlayImageCaption();
+    var imgAttribUrl = getOverlayImageAttribUrl();
+    img.setAttribute('src', imageElement.getAttribute('src'));
+    img.setAttribute('alt', imageElement.getAttribute('alt'));
+    img.setAttribute('data-image-index', imageElement.getAttribute('data-image-index'));
+    imgCaption.textContent = imageObject.caption;
+    imgAttribUrl.setAttribute('href', imageObject.attrib);
+    imgAttribUrl.textContent = getHostName(imageObject.attrib);
+    var index = Number(imageElement.getAttribute('data-image-index'));
+    // index == 0 ? getLeftArrowButton().classList.add('hidden') : getLeftArrowButton().classList.remove('hidden');
+    // index == imageList.length - 1 ? getRightArrowButton().classList.add('hidden') : getRightArrowButton().classList.remove('hidden');
 }
 
 function loadImages(imageArray) {
     var imageContainer = document.querySelector('[data-image-grid]');
-    imageArray.forEach(image => {
+    imageArray.forEach((image, index, array) => {
         var newImage = document.createElement('img');
         newImage.setAttribute('src', IMG_DIR + image.src);
         newImage.setAttribute('alt', image.caption);
         newImage.setAttribute('data-thumbnail','');
+        newImage.setAttribute('data-image-index', index);
         newImage.addEventListener('click', event => {
             event.preventDefault();
             loadClickedImage(image, newImage);
-            showOverlay();
+            toggleOverlayLayer();
         });
         newImage.onload = resizeImage(newImage);
         var newAnchor = document.createElement('a');
@@ -153,55 +176,82 @@ function loadImages(imageArray) {
     });
 }
 
+function loadNextImage(index) {
+    var image = imageList[index];
+    getOverlayImage().setAttribute('src', IMG_DIR + image.src);
+    getOverlayImage().setAttribute('alt', image.caption);
+    getOverlayImage().setAttribute('data-image-index', index);
+    getOverlayImageCaption().textContent = image.caption;
+    getOverlayImageAttribUrl().setAttribute('href', image.attrib);
+    getOverlayImageAttribUrl().textContent = getHostName(image.attrib);
+}
+
+function leftArrow() {
+    var index = Number(getOverlayImageIndex());
+        if (index > 0) {
+            var newIndex = index - 1;
+            loadNextImage(newIndex);
+            index == 0 ? getLeftArrowButton().classList.add('hidden') : getLeftArrowButton().classList.remove('hidden');
+        }
+}
+
+function rightArrow() {
+    var index = Number(getOverlayImageIndex());
+        if (index < imageList.length - 1) {
+            var newIndex = index + 1;
+            loadNextImage(newIndex);
+            index == imageList.length - 1 ? getRightArrowButton().classList.add('hidden') : getRightArrowButton().classList.remove('hidden');
+        }
+}
+
 function addOverlayImageOnLoadListener() {
+    // To get current overlay image height and set that on parent container. Sidebar
+    // would not stretch to full height without that.
     var image = getOverlayImage();
     image.addEventListener('load', event => {
-        // console.log(`H: ${image.height}`);
         getOverlayImageContainer().setAttribute('style', `height: ${image.height}px`);
     });
     window.addEventListener('resize', event => {
-        // console.log(`H: ${image.height}`);
         getOverlayImageContainer().setAttribute('style', `height: ${image.height}px`);
     });
-}
-
-function showOverlay() {
-    getOverlayLayer().classList.remove('hidden');
-    getOverlayButtonLayer().classList.remove('hidden');
-}
-
-function exitOverlay() {
-    getOverlayLayer().classList.add('hidden');
-    getOverlayButtonLayer().classList.add('hidden');
 }
 
 function addOverlayExitListener() {
     // Button
     var overlayExitIcon = document.querySelector('[data-overlay-exit]');
     overlayExitIcon.addEventListener('click', event => {
-        exitOverlay();
+        toggleOverlayLayer();
     });
     // Escape key
     document.onkeydown = function(event) {
         if (event.keyCode == 27) {
-            exitOverlay();
+            toggleOverlayLayer();
         }
     };
 }
 
-function tempOverlay(){
-    var newImage = document.createElement('img');
-    newImage.setAttribute('src', IMG_DIR + imageList[0].src);
-    newImage.setAttribute('alt', imageList[0].caption);
-    loadClickedImage(imageList[0], newImage);
-    showOverlay();
+function addButtonOverlayListener() {
+    var leftButton = document.querySelector('[data-overlay-left-arrow]');
+    leftButton.addEventListener( 'click', event => {
+        leftArrow();
+    });
+    var rightButton = document.querySelector('[data-overlay-right-arrow]');
+    rightButton.addEventListener( 'click', event => {
+        rightArrow();
+    });
+}
+
+function tempWorkOnOverlayLayer(){
+    getFirstImageElement().click();
 }
 
 function main() {
     loadImages(imageList);
     addOverlayImageOnLoadListener();
     addOverlayExitListener();
-    tempOverlay();
+    addButtonOverlayListener();
+
+    tempWorkOnOverlayLayer();
 }
 
 main();
